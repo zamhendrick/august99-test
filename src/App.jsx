@@ -115,7 +115,7 @@ function App() {
       {/* List */}
       <div className="w-full max-w-2xl px-4 mt-4">
         <div className="p-4 rounded bg-white">
-          { pageLoaded ? <InfiniteScroll dataLength={ launches.length } next={ fetchMoreData } hasMore={ launchesDetails.hasNextPage } loader={ <LaunchItemLoader /> } endMessage={ <div className="flex justify-center"><span className="font-semibold text-slate-400">You're up to date</span></div> }>
+          { pageLoaded ? <InfiniteScroll dataLength={ launches.length } next={ fetchMoreData } hasMore={ launchesDetails.hasNextPage } loader={ <LaunchItemLoader /> } endMessage={ !filterValue && <div className="flex justify-center"><span className="font-semibold text-slate-400">You're up to date</span></div> }>
             { launches.length > 0 && filteredLaunches.map((item, index) => <LaunchItem key={ index } item={ item } />) }
           </InfiniteScroll> : <LaunchItemLoader /> }
         </div>
