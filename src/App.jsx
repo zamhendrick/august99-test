@@ -11,6 +11,17 @@ function App() {
   const [filterValue, setFilterValue] = useState('')
   const [pageLoaded, setPageLoaded] = useState(false);
 
+  const filteredLaunches = launches.filter(launch => {
+    const launch_year = String(new Date(launch.static_fire_date_utc).getFullYear())
+    const flight_number = String(launch.flight_number)
+    if (launch.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+      launch_year.includes(filterValue.toLowerCase()) ||
+      flight_number.includes(filterValue.toLowerCase()) ||
+      launch.details?.toLowerCase().includes(filterValue.toLowerCase()) ) {
+      return launch;
+    }
+  })
+
   useEffect(() => {
     console.log(launches)
   }, [launches])
@@ -58,12 +69,6 @@ function App() {
     )
   }
 
-  const handleFilterInput = (e) => {
-    const { value } = e.target;
-    const filtered = launches.filter(launch => launch.name.toLowerCase().includes(value.toLowerCase()) || launch.details?.toLowerCase().includes(value.toLowerCase()) );
-    // setLaunches(filtered)
-  }
-
   const LaunchItem  = ({ item }) => {
     const launch_year = new Date(item.static_fire_date_utc).getFullYear()
     return (
@@ -104,14 +109,14 @@ function App() {
   return (
     <div className="flex flex-col items-center w-full">
       {/* Search Bar */}
-      <div className="w-full max-w-2xl p-4">
-        <input className="w-full px-4 py-2 text-xs" placeholder="Enter keywords" onChange={ handleFilterInput } />
+      <div className="w-full max-w-2xl px-4 mt-4">
+        <input className="w-full px-4 py-2 rounded text-xs placeholder:italic placeholder:text-slate-300" placeholder="Enter keywords" value={ filterValue } onChange={ (e) => setFilterValue(e.target.value) } />
       </div>
       {/* List */}
-      <div className="w-full max-w-2xl p-4">
-        <div className="p-4 bg-white">
+      <div className="w-full max-w-2xl px-4 mt-4">
+        <div className="p-4 rounded bg-white">
           { pageLoaded ? <InfiniteScroll dataLength={ launches.length } next={ fetchMoreData } hasMore={ launchesDetails.hasNextPage } loader={ <LaunchItemLoader /> } endMessage={ <div className="flex justify-center"><span className="font-semibold text-slate-400">You're up to date</span></div> }>
-            { launches.length > 0 && launches.map((item, index) => <LaunchItem key={ index } item={ item } />) }
+            { launches.length > 0 && filteredLaunches.map((item, index) => <LaunchItem key={ index } item={ item } />) }
           </InfiniteScroll> : <LaunchItemLoader /> }
         </div>
       </div>
