@@ -23,10 +23,6 @@ function App() {
   })
 
   useEffect(() => {
-    console.log(launches)
-  }, [launches])
-
-  useEffect(() => {
     if (launches?.length === 0) {
       const payload = {
         query: "",
@@ -49,7 +45,6 @@ function App() {
   }, [])
 
   const fetchMoreData = () => {
-    console.log('call')
     const payload = {
       query: "",
       options: {
@@ -75,7 +70,7 @@ function App() {
       <div className="launch-item">
         <div className="flex items-center">
           <div className="p-2">
-            { item.links.patch.small || item.links.patch.large ? <img className="max-w-[60px]" src={ item.links.patch.small || item.links.patch.large } /> :
+            { item.links.patch.small || item.links.patch.large ? <img className="max-w-[60px]" src={ item.links.patch.small || item.links.patch.large } alt={ item.name + '_logo' } loading="lazy"/> :
               <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
                 <span className="font-semibold text-slate-400 text-xs text-center leading-3">NO <br></br> IMAGE</span>
               </div>
