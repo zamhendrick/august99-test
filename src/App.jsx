@@ -66,12 +66,21 @@ function App() {
 
   const LaunchItem  = ({ item }) => {
     const launch_year = new Date(item.static_fire_date_utc).getFullYear()
+    const [imageLoading, setImageLoading] = useState(true);
+    const [imageError, setImageError] = useState(false);
     return (
       <div className="launch-item">
         <div className="flex items-center">
           <div className="p-2">
-            { item.links.patch.small || item.links.patch.large ? <img className="max-w-[60px]" src={ item.links.patch.small || item.links.patch.large } alt={ item.name + '_logo' } loading="lazy"/> :
-              <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
+            { imageLoading && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg" >
+              <span className="text-slate-300 animate-spin"><i className="fa-solid fa-spinner fa-xl"></i></span>
+            </div> }
+            { imageError && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
+                <span className="font-semibold text-slate-400 text-xs text-center leading-3">NO <br></br> IMAGE</span>
+              </div> }
+              
+            { (!imageError) && (item.links?.patch?.small || item.links?.patch?.large) ? <img className="max-w-[60px]" src={ item.links.patch.small || item.links.patch.large } loading="lazy" onLoad={ () => setImageLoading(false) } onError={ (e) => { setImageLoading(false); setImageError(true); } } /> :
+              !imageError && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
                 <span className="font-semibold text-slate-400 text-xs text-center leading-3">NO <br></br> IMAGE</span>
               </div>
             }
@@ -113,6 +122,15 @@ function App() {
           { pageLoaded ? <InfiniteScroll dataLength={ launches.length } next={ fetchMoreData } hasMore={ launchesDetails.hasNextPage } loader={ <LaunchItemLoader /> } endMessage={ !filterValue && <div className="flex justify-center"><span className="font-semibold text-slate-400">You're up to date</span></div> }>
             { launches.length > 0 && filteredLaunches.map((item, index) => <LaunchItem key={ index } item={ item } />) }
           </InfiniteScroll> : <LaunchItemLoader /> }
+
+          {/* <LaunchItem item={{
+            links: {
+              patch: {
+                small: 'https://localhost:3000/image.png',
+                large: 'https://localhost:3000/image.png'
+              }
+            }
+          }} /> */}
         </div>
       </div>
     </div>
