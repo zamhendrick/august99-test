@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, memo } from 'react';
 import './App.scss';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -64,12 +64,22 @@ function App() {
     )
   }
 
-  const LaunchItem  = ({ item }) => {
+  const LaunchItem  = memo(function LaunchItem({ item, index }) {
     const launch_year = new Date(item.static_fire_date_utc).getFullYear()
     const [imageLoading, setImageLoading] = useState(true);
     const [imageError, setImageError] = useState(false);
+
+    const handleOnLoad = () => {
+      setImageLoading(false)
+    }
+
+    const handleOnError = () => {
+      setImageLoading(false);
+      setImageError(true);
+    }
+
     return (
-      <div className="launch-item">
+      <div key={ index } className="launch-item">
         <div className="flex items-center">
           <div className="p-2">
             { imageLoading && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg" >
@@ -78,8 +88,7 @@ function App() {
             { imageError && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
                 <span className="font-semibold text-slate-400 text-xs text-center leading-3">NO <br></br> IMAGE</span>
               </div> }
-              
-            { (!imageError) && (item.links?.patch?.small || item.links?.patch?.large) ? <img className="max-w-[60px]" src={ item.links.patch.small || item.links.patch.large } loading="lazy" onLoad={ () => setImageLoading(false) } onError={ (e) => { setImageLoading(false); setImageError(true); } } /> :
+            { (!imageError) && (item.links?.patch?.small || item.links?.patch?.large) ? <img className="max-w-[60px]" src={ item?.links?.patch?.small || item?.links?.patch?.large } loading="lazy" onLoad={ handleOnLoad } onError={ handleOnError } />   :
               !imageError && <div className="flex justify-center items-center w-[60px] h-[60px] rounded-lg bg-slate-200" >
                 <span className="font-semibold text-slate-400 text-xs text-center leading-3">NO <br></br> IMAGE</span>
               </div>
@@ -92,7 +101,7 @@ function App() {
         </div>
       </div>
     )
-  }
+  })
   
   const LaunchItemLoader = () => {
     return (
